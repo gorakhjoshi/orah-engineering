@@ -10,6 +10,7 @@ import { BorderRadius, FontWeight, Spacing } from "shared/styles/styles"
 import { ActiveRollAction, ActiveRollOverlay } from "staff-app/components/active-roll-overlay/active-roll-overlay.component"
 import { StudentListTile } from "staff-app/components/student-list-tile/student-list-tile.component"
 import styled from "styled-components"
+import { RolllStateType } from "shared/models/roll"
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
@@ -17,7 +18,13 @@ export const HomeBoardPage: React.FC = () => {
     url: "get-homeboard-students",
   })
   const [students, setStudents] = useState<Person[]>([])
+
   const [searchStudents, setSearchStudents] = useState<Person[]>([])
+  const [attedence, setAttedence] = useState({
+    present: 0,
+    late: 0,
+    absent: 0,
+  })
 
   useEffect(() => {
     void getStudents()
@@ -25,10 +32,15 @@ export const HomeBoardPage: React.FC = () => {
 
   useEffect(() => {
     if (loadState === "loaded") {
+      if (isRollMode) {
+        data!.students.forEach((s) => {
+          s.rollState = "unmark"
+        })
+      }
       setStudents(data!.students)
       setSearchStudents(data!.students)
     }
-  }, [loadState])
+  }, [loadState, isRollMode])
 
   const onToolbarAction = (action: ToolbarAction, value?: string) => {
     if (action === "roll") {
@@ -71,6 +83,24 @@ export const HomeBoardPage: React.FC = () => {
     }
   }
 
+  function getAttedence(id: number, rollState: RolllStateType) {
+    searchStudents?.forEach((s) => s.id === id && (s.rollState = rollState))
+
+    let presentCount = 0
+    let lateCount = 0
+    let absentCount = 0
+
+    searchStudents.forEach((s) => {
+      if (s.rollState === "present") presentCount++
+      if (s.rollState === "late") lateCount++
+      if (s.rollState === "absent") absentCount++
+    })
+
+    setAttedence((prev) => {
+      return { ...prev, present: presentCount, late: lateCount, absent: absentCount }
+    })
+  }
+
   return (
     <>
       <S.PageContainer>
@@ -85,7 +115,7 @@ export const HomeBoardPage: React.FC = () => {
         {loadState === "loaded" && data?.students && (
           <>
             {searchStudents.map((s) => (
-              <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
+              <StudentListTile key={s.id} isRollMode={isRollMode} student={s} getAttedence={getAttedence} />
             ))}
           </>
         )}
@@ -96,7 +126,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} />
+      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} attedence={attedence} totalStudents={students?.length} />
     </>
   )
 }
@@ -113,21 +143,21 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
     <S.ToolbarContainer>
       <div className="toggleName">
         <div
-          className="toogle"
           onClick={() => {
             setToggle(!toggle)
             onItemClick("sortFirst", toggle ? "asc" : "dec")
           }}
+          className="toggle"
         >
           First
           <FontAwesomeIcon icon={faSort} title="Ascending " />
         </div>
         <div
-          className="toogle"
           onClick={() => {
             setToggle(!toggle)
             onItemClick("sortLast", toggle ? "asc" : "dec")
           }}
+          className="toggle"
         >
           Last
           <FontAwesomeIcon icon={faSort} title="Ascending " />
@@ -157,7 +187,7 @@ const S = {
     font-weight: ${FontWeight.strong};
     border-radius: ${BorderRadius.default};
 
-    .toogle {
+    .toggle {
       background-color: white;
       color: black;
       padding: ${Spacing.u2};
@@ -169,7 +199,6 @@ const S = {
       width: 120px;
       justify-content: space-between;
     }
-
     input {
       padding: 8px;
     }
