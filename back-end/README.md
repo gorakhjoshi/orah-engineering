@@ -1,17 +1,20 @@
 # Back End Engineering Test
+
 At Orah, most of our back end services are written in Typescript/Javascript/Node. This project shares similarities with our main web application in terms of technologies used. Hopefully this will give you some idea of what its like to be working on the team at Orah as you are working on this project.
 
 ## Instructions
+
 This test has all the necessary components for a functional app with some missing functionality which you will need to implement, however please feel free to add any files/components you deem useful.
 
 Please fork this repo under your own github account and create a branch named `solution` once you are ready to start and commit as you would normally do under your own `solution` branch as we would love to see how you progress.
 
-### Note: Do not create Pull Request. 
+### Note: Do not create Pull Request.
 
 Share the link of the forked repository once you are finished with your `solution`.
 
 ## Technology
-This project is mainly written in Typescript with Node. If you are not  familar with Typescript, you can check out this quick start guide [here](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html).
+
+This project is mainly written in Typescript with Node. If you are not familar with Typescript, you can check out this quick start guide [here](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html).
 
 We use TypeORM for our ORM. You can check out TypeORM [here](https://typeorm.io/#/).
 
@@ -68,6 +71,7 @@ cd back-end && sqlite3 backend-test.db
 ```
 
 ## How to get started and run the back end app
+
 You will need to have Node **10.16.0** or later on your local development machine. You can use [nvm](https://github.com/creationix/nvm#installation) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows#node-version-manager-nvm-for-windows) to switch Node versions between different projects.
 
 ### First install all dependencies
@@ -86,13 +90,14 @@ cd back-end && npm start
 
 Once the app is compiled successfully you can open the browser and go to http://localhost:4001/student/get-all to see a list of students
 
-
 ## Project structure
+
 Open the project in VSCode as a workspace and install the recommented plugins:
 
 ```sh
 cd back-end && sqlite3 backend-test.db
 ```
+
 - `vscode-eslint` for linting
 - `prettier-vscode` for formatting
 
@@ -118,7 +123,7 @@ This is the place for the controllers which contain the actual API functions use
 
 ### src/entity
 
-This is where we have our TypeORM entities. We have one entity per database table. We are using `sqlite3` for our database. In the root folder you will see the `backend-test.db` file which is the sqlite3 database we use. That is configured in `ormconfig.json`. 
+This is where we have our TypeORM entities. We have one entity per database table. We are using `sqlite3` for our database. In the root folder you will see the `backend-test.db` file which is the sqlite3 database we use. That is configured in `ormconfig.json`.
 
 ### src/interface
 
@@ -140,7 +145,6 @@ You wil be able to use Postman to do the following:
 6. (Not yet implemented) Get the group list: GET http://localhost:4001/group/get-all
 7. (Not yet implemented) Get students in a group: GET http://localhost:4001/group/get-students-in-group
 
-
 ## Tasks Background
 
 A Roll is created when Staff at the School do a Roll Check to ensure the Students are all present for the Class or other Activity.
@@ -151,26 +155,26 @@ A `Group` is first created with "roll filter" settings (explained below), and no
 
 A `Group` is created with the following "roll filter" settings:
 
-* **name** - name of the group, e.g. "Frequently late students"
-* **number_of_weeks** - the number of weeks in the past (from now) used to analyse roll data, e.g. 2
-* **roll_states** - a csv of of roll states to match students with, e.g. "late" or "absent,late"
-* **incidents** - the number of occurrences that a student needs to match to be included in the filter, e.g. 3
-* **ltmt** - whether the student needs to match Less Than or More Than the "incidents" value to be included in the filter, e.g. "<" (less than) or ">" (more than)
+- **name** - name of the group, e.g. "Frequently late students"
+- **number_of_weeks** - the number of weeks in the past (from now) used to analyse roll data, e.g. 2
+- **roll_states** - a csv of of roll states to match students with, e.g. "late" or "absent,late"
+- **incidents** - the number of occurrences that a student needs to match to be included in the filter, e.g. 3
+- **ltmt** - whether the student needs to match Less Than or More Than the "incidents" value to be included in the filter, e.g. "<" (less than) or ">" (more than)
 
 Once the group(s) have been created, the "RunGroupFilters" api (Task 2) is run to populate the groups with students based on their roll attendance and the "roll filter" settings saved to that group.
 
 For example, we create the "Frequently late students" group with the following settings:
 
-- *number_of_weeks*: 2
-- *roll_states*: "late"
-- *incidents*: 3
-- *ltmt*: ">" (more than)
+- _number_of_weeks_: 2
+- _roll_states_: "late"
+- _incidents_: 3
+- _ltmt_: ">" (more than)
 
 Once we run this group filter, we analyse the roll data over the previous 2 weeks to find which students have been "late" more than 3 times. The matching students should then be saved to the group (in the `student_group` table). The following metadata should also be saved:
 
-* **group.run_at** - the date and time the group filter was run
-* **group.student_count** - the count of students that were matched and saved to the group
-* **student_group.incident_count** - the number of roll occurrences that were found to match the filter for that particular student
+- **group.run_at** - the date and time the group filter was run
+- **group.student_count** - the count of students that were matched and saved to the group
+- **student_group.incident_count** - the number of roll occurrences that were found to match the filter for that particular student
 
 ## Task 1 - Develop the Group CRUD lifecycle API's
 
@@ -180,13 +184,13 @@ We need to be able to create groups, update groups, delete groups and get a list
 
 Looking at the Group table, create an API so that a Group can be created with all of the fields populated. It is important that the client provides values for these fields:
 
-* `name` the name of the group
-* `number_of_weeks` will just be an integer, representing the number of weeks for the analysis period
-* `roll_states` will be one or more of the following values: `"unmark" | "present" | "absent" | "late"`
-* `incidents` is an integer representing the number of times the student meets the criteria in the period
-* `ltmt` stands for "Less Than or More Than". It will be either a `"<"` string or `">"`.
+- `name` the name of the group
+- `number_of_weeks` will just be an integer, representing the number of weeks for the analysis period
+- `roll_states` will be one or more of the following values: `"unmark" | "present" | "absent" | "late"`
+- `incidents` is an integer representing the number of times the student meets the criteria in the period
+- `ltmt` stands for "Less Than or More Than". It will be either a `"<"` string or `">"`.
 
-### UpdateGroup and DeleteGroup API   	
+### UpdateGroup and DeleteGroup API
 
 These APIs will allow the client to update a group and delete a group. The update group API allows the user to update the same fields as the CreateGroup API.
 
@@ -198,7 +202,7 @@ The GetGroups API will return a list of groups and will contain all the group fi
 
 The GetGroupStudents API will return a list of the Students in the Group. It will return an array of students and include the fields: `id`, `first_name`, `last_name` and `full_name` (which is derived from the first and last name).
 
-## Task 2 - Develop the RunGroupFilters API 
+## Task 2 - Develop the RunGroupFilters API
 
 In order to complete this task, you will need roll data in the database. Use the existing roll api routes to generate some roll data over the last few weeks that will be used for analysis.
 
@@ -207,15 +211,15 @@ When the user runs the Group Filters to do an Analysis, the following will happe
 1. The Students currently in each Group will be deleted
 2. The filter will be run against each group, analysing the roll data and populating the matching students into the group.
 3. The metadata (explained above) will also be stored:
-    - `student_group.incident_count` (per student)
-    - `group.run_at`
-    - `group.student_count` 
+   - `student_group.incident_count` (per student)
+   - `group.run_at`
+   - `group.student_count`
 
 As explained above, the "roll filters" we need to support are:
 
 1. Time Period in Weeks (`number_of_weeks`), AND
 2. One or more Roll States: `"unmark" | "present" | "absent" | "late"` (`roll_states`), AND
-3. (Greater than the Number of Incidents in the Time Period, OR 
+3. (Greater than the Number of Incidents in the Time Period, OR
 4. Less then the Number of Incidents in the Time Period) (`ltmt` and `incidents`)
 
 ## Solution Presentation

@@ -27,5 +27,4 @@ export class Group {
 
   @Column()
   student_count: number
-
 }
