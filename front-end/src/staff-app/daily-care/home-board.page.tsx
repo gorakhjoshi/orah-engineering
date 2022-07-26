@@ -26,6 +26,8 @@ export const HomeBoardPage: React.FC = () => {
     absent: 0,
   })
 
+  const [searchFilter, setSearchFilter] = useState("all")
+
   useEffect(() => {
     void getStudents()
   }, [getStudents])
@@ -76,7 +78,9 @@ export const HomeBoardPage: React.FC = () => {
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     if (value.trim()) {
-      const searchData = students.filter((item) => (item.first_name + " " + item.last_name).toLowerCase().includes(e.target.value.toLowerCase()))
+      const searchData = students.filter((item) => {
+        if ((item.first_name + " " + item.last_name).toLowerCase().includes(e.target.value.toLowerCase())) return item
+      })
       setSearchStudents(() => [...searchData])
     } else {
       setSearchStudents(() => [...students])
@@ -114,9 +118,14 @@ export const HomeBoardPage: React.FC = () => {
 
         {loadState === "loaded" && data?.students && (
           <>
-            {searchStudents.map((s) => (
-              <StudentListTile key={s.id} isRollMode={isRollMode} student={s} getAttedence={getAttedence} />
-            ))}
+            {searchStudents
+              .filter((item) => {
+                if (searchFilter === "all") return item
+                else if (item.rollState === searchFilter) return item
+              })
+              .map((s) => (
+                <StudentListTile key={s.id} isRollMode={isRollMode} student={s} getAttedence={getAttedence} />
+              ))}
           </>
         )}
 
@@ -126,7 +135,7 @@ export const HomeBoardPage: React.FC = () => {
           </CenteredContainer>
         )}
       </S.PageContainer>
-      <ActiveRollOverlay isActive={isRollMode} onItemClick={onActiveRollAction} attedence={attedence} totalStudents={students?.length} />
+      <ActiveRollOverlay sortStatus={setSearchFilter} isActive={isRollMode} onItemClick={onActiveRollAction} attedence={attedence} totalStudents={students?.length} />
     </>
   )
 }
@@ -142,25 +151,31 @@ const Toolbar: React.FC<ToolbarProps> = (props) => {
   return (
     <S.ToolbarContainer>
       <div className="toggleName">
-        <div
-          onClick={() => {
-            setToggle(!toggle)
-            onItemClick("sortFirst", toggle ? "asc" : "dec")
-          }}
-          className="toggle"
-        >
-          First
-          <FontAwesomeIcon icon={faSort} title="Ascending " />
+        <div className="toggle">
+          <div>First</div>
+          <FontAwesomeIcon
+            icon={faSort}
+            title="Ascending "
+            className="icon"
+            inverse
+            onClick={() => {
+              setToggle(!toggle)
+              onItemClick("sortFirst", toggle ? "asc" : "dec")
+            }}
+          />
         </div>
-        <div
-          onClick={() => {
-            setToggle(!toggle)
-            onItemClick("sortLast", toggle ? "asc" : "dec")
-          }}
-          className="toggle"
-        >
-          Last
-          <FontAwesomeIcon icon={faSort} title="Ascending " />
+        <div className="toggle">
+          <div>Last</div>
+          <FontAwesomeIcon
+            icon={faSort}
+            title="Ascending "
+            className="icon"
+            inverse
+            onClick={() => {
+              setToggle(!toggle)
+              onItemClick("sortLast", toggle ? "asc" : "dec")
+            }}
+          />
         </div>
       </div>
 
@@ -188,19 +203,28 @@ const S = {
     border-radius: ${BorderRadius.default};
 
     .toggle {
+      display: flex;
+      align-items: center;
       background-color: white;
       color: black;
       padding: ${Spacing.u2};
       border-radius: ${BorderRadius.default};
-      cursor: pointer;
     }
     .toggleName {
       display: flex;
-      width: 120px;
+      width: 140px;
       justify-content: space-between;
     }
     input {
       padding: 8px;
+    }
+
+    .icon {
+      margin-left: 4px;
+      border-radius: 50%;
+      padding: 5px;
+      background-color: ${Colors.blue.base};
+      cursor: pointer;
     }
   `,
   Button: styled(Button)`
