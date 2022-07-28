@@ -27,6 +27,7 @@ export const HomeBoardPage: React.FC = () => {
   })
 
   const [searchFilter, setSearchFilter] = useState("all")
+  const [apiCall] = useApi<{ students: Person[] }>({ url: "save-roll" })
 
   useEffect(() => {
     void getStudents()
@@ -71,6 +72,11 @@ export const HomeBoardPage: React.FC = () => {
 
   const onActiveRollAction = (action: ActiveRollAction) => {
     if (action === "exit") {
+      setIsRollMode(false)
+    }
+
+    if (action === "complete") {
+      apiCall(searchStudents.map((r) => ({ student_id: r.id, roll_state: r.rollState })))
       setIsRollMode(false)
     }
   }
